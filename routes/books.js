@@ -1,15 +1,13 @@
 'use strict';
 
 const express = require('express');
+const knex = require('../knex.js');
 const app = express();
 const humps = require('humps');
 
 // eslint-disable-next-line new-cap
 const router = express.Router();
 
-const env = process.env.node_env || 'development';
-const config = require('../knexfile.js')[env];
-const knex = require('knex')(config);
 
 router.get("/books", (req, res) => {
   knex("books").orderBy('title', 'asc')
@@ -92,14 +90,6 @@ router.delete('/books/:id', (req, res) => {
       res.status(200).json(humps.camelizeKeys(deletedBook));
     })
   })
-  // .then((result) => {
-  //   knex('books')
-  //   .where('id', bookId)
-  //   .then((updated) => {
-  //     let book = updated[0];
-  //     res.status(200).json(book);
-  //   })
-  // })
   .catch((err) => {
     console.log(err)
   })
