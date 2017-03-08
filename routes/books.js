@@ -2,6 +2,7 @@
 
 const express = require('express');
 const app = express();
+const humps = require('humps');
 
 // eslint-disable-next-line new-cap
 const router = express.Router();
@@ -14,7 +15,7 @@ router.get("/books", (req, res) => {
   knex("books").orderBy('title', 'asc')
   .then(books => {
     res.set('Content-Type', 'application/json');
-    res.status(200).json(books);
+    res.status(200).json(humps.camelizeKeys(books));
   }).catch(err => {
     console.log(err);
   });
@@ -27,7 +28,7 @@ router.get("/books/:id", (req, res) => {
   .then(books => {
     const bookItem = books[0];
     res.set('Content-Type', 'application/json');
-    res.status(200).json(bookItem);
+    res.status(200).json(humps.camelizeKeys(bookItem));
   }).catch(err => {
     console.log(err);
   });
@@ -49,7 +50,7 @@ router.post('/books', (req, res) => {
       .where('title', newBook.title)
       .then((b) => {
         let bookItem = b[0];
-        res.status(200).json(bookItem);
+        res.status(200).json(humps.camelizeKeys(bookItem));
       })
     })
     .catch((err) => {
@@ -68,7 +69,7 @@ router.patch('/books/:id', (req, res) => {
     .where('id', bookId)
     .then((updated) => {
       let book = updated[0];
-      res.status(200).json(book);
+      res.status(200).json(humps.camelizeKeys(book));
     })
   })
   .catch((err) => {
@@ -88,7 +89,7 @@ router.delete('/books/:id', (req, res) => {
     .where('id', bookId)
     .del()
     .then((result) => {
-      res.status(200).json(deletedBook);
+      res.status(200).json(humps.camelizeKeys(deletedBook));
     })
   })
   // .then((result) => {
