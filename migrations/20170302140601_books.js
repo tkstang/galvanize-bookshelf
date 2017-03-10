@@ -2,7 +2,7 @@
 
 exports.up = (knex, Promise) => {
   return knex.schema.createTable('books', (table) => {
-    table.increments('id');
+    table.increments('id').primary();
     table.string('title', 255).notNullable().defaultTo('');
 		table.string('author', 255).notNullable().defaultTo('');
 		table.string('genre', 255).notNullable().defaultTo('');

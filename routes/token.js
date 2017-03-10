@@ -54,7 +54,7 @@ router.post("/token", (req, res) => {
 							res.set('Content-Type', 'text/plain');
 							res.status(400).send('Bad email or password');
 						} else {
-							const claim = { userId: req.body.email };
+							const claim = { userId: user.id };
 							const token = jwt.sign(claim, process.env.JWT_KEY, {
 								expiresIn: '7 days',
 							});
