@@ -77,7 +77,6 @@ router.patch('/books/:id', (req, res) => {
 
 router.delete('/books/:id', (req, res) => {
   const bookId = parseInt(req.params.id);
-  const book = req.body;
   knex('books')
 	.select('author', 'cover_url', 'description', 'title', 'genre')
   .where('id', bookId)
