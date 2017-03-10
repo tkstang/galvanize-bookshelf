@@ -25,46 +25,55 @@ router.get("/token", (req, res) => {
 })
 
 router.post("/token", (req, res) => {
-	knex("users")
-	.select('hashed_password')
-	.where('email', req.body.email)
-	.then(selected => {
-		if (selected.length === 0){
-			res.set('Content-Type', 'text/plain');
-			return res.status(400).send('Bad email or password');
-		} else {
-			const password = selected[0].hashed_password;
-			bcrypt.compare(req.body.password, password)
-			.then(result => {
-						knex("users")
-						.select('id', 'first_name', 'last_name', 'email')
-						.where('email', req.body.email)
-						.then(result => {
-							const user = humps.camelizeKeys(result[0]);
-							if (user.email !== req.body.email){
-								res.set('Content-Type', 'text/plain');
-								res.status(400).send('Bad email or password');
-
-							} else {
-								const claim = { userId: req.body.email };
-								const token = jwt.sign(claim, process.env.JWT_KEY, {
-									expiresIn: '7 days',
-								});
-								console.log(token, claim);
-								res.cookie('token', token, {
-									httpOnly: true
-								});
-								res.set('Content-Type', 'application/json');
-								res.status(200).send(user);
-							}
-						})
+	if (!(req.body.email)){
+		res.set('Content-Type', 'text/plain');
+		console.log(1);
+		res.status(400).send('Email must not be blank');
+	} else if (!(req.body.password)){
+		res.set('Content-Type', 'text/plain');
+		console.log(2);
+		res.status(400).send('Password must not be blank');
+	} else {
+		knex("users")
+		.select('hashed_password')
+		.where('email', req.body.email)
+		.then(selected => {
+			if (selected.length === 0){
+				res.set('Content-Type', 'text/plain');
+				return res.status(400).send('Bad email or password');
+			} else {
+				const password = selected[0].hashed_password;
+				bcrypt.compare(req.body.password, password)
+				.then(result => {
+					knex("users")
+					.select('id', 'first_name', 'last_name', 'email')
+					.where('email', req.body.email)
+					.then(result => {
+						const user = humps.camelizeKeys(result[0]);
+						if (user.email !== req.body.email){
+							res.set('Content-Type', 'text/plain');
+							res.status(400).send('Bad email or password');
+						} else {
+							const claim = { userId: req.body.email };
+							const token = jwt.sign(claim, process.env.JWT_KEY, {
+								expiresIn: '7 days',
+							});
+							console.log(token, claim);
+							res.cookie('token', token, {
+								httpOnly: true
+							});
+							res.set('Content-Type', 'application/json');
+							res.status(200).send(user);
+						}
+					})
 				})
 				.catch(err => {
-				res.set('Content-Type', 'text/plain');
-				res.status(400).send('Bad email or password');
-		  	});
+					res.set('Content-Type', 'text/plain');
+					res.status(400).send('Bad email or password');
+				});
 			}
 		})
+	}
 })
 
 router.delete("/token", (req, res) => {
@@ -78,6 +87,7 @@ router.delete("/token", (req, res) => {
 	res.set('Content-Type', 'application/json');
 	res.status(200).send(false);
 })
+
 
 
 
