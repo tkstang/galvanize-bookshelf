@@ -32,7 +32,7 @@ router.get("/books/:id", (req, res) => {
   });
 })
 
-router.post('/books', (req, res) => {
+router.post('/books', validate(validation.login), (req, res) => {
   const newBook = {
     title: req.body.title,
     author: req.body.author,

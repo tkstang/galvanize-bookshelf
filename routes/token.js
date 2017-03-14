@@ -24,7 +24,7 @@ router.get("/token", (req, res) => {
 	})
 })
 
-router.post("/token", (req, res) => {
+router.post("/token", validate(validation.login), (req, res) => {
 	if (!(req.body.email)){
 		res.set('Content-Type', 'text/plain');
 		console.log(1);

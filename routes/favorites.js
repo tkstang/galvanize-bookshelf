@@ -49,7 +49,7 @@ router.get("/favorites/check", (req, res) => {
   })
 });
 
-router.post("/favorites", (req, res) => {
+router.post("/favorites", validate(validation.login), (req, res) => {
   jwt.verify(req.cookies.token, process.env.JWT_KEY, (err, payload) => {
     if (err) {
       res.set('Content-Type', 'text/plain');
