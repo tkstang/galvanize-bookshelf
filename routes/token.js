@@ -6,6 +6,8 @@ const bcrypt = require('bcrypt-as-promised');
 const cookieParser = require('cookie-parser');
 const jwt = require('jsonwebtoken');
 const humps = require('humps');
+const ev = require('express-validation');
+const validations = require('../validations/users');
 
 // eslint-disable-next-line new-cap
 const router = express.Router();
@@ -45,27 +47,27 @@ router.post("/token", (req, res) => {
 				const password = selected[0].hashed_password;
 				bcrypt.compare(req.body.password, password)
 				.then(result => {
-					knex("users")
+					return knex("users")
 					.select('id', 'first_name', 'last_name', 'email')
 					.where('email', req.body.email)
-					.then(result => {
-						const user = humps.camelizeKeys(result[0]);
-						if (user.email !== req.body.email){
-							res.set('Content-Type', 'text/plain');
-							res.status(400).send('Bad email or password');
-						} else {
-							const claim = { userId: user.id };
-							const token = jwt.sign(claim, process.env.JWT_KEY, {
-								expiresIn: '7 days',
-							});
-							console.log(token, claim);
-							res.cookie('token', token, {
-								httpOnly: true
-							});
-							res.set('Content-Type', 'application/json');
-							res.status(200).send(user);
-						}
-					})
+				})
+				.then(result => {
+					const user = humps.camelizeKeys(result[0]);
+					if (user.email !== req.body.email){
+						res.set('Content-Type', 'text/plain');
+						res.status(400).send('Bad email or password');
+					} else {
+						const claim = { userId: user.id };
+						const token = jwt.sign(claim, process.env.JWT_KEY, {
+							expiresIn: '7 days',
+						});
+						console.log(token, claim);
+						res.cookie('token', token, {
+							httpOnly: true
+						});
+						res.set('Content-Type', 'application/json');
+						res.status(200).send(user);
+					}
 				})
 				.catch(err => {
 					res.set('Content-Type', 'text/plain');

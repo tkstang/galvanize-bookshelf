@@ -10,7 +10,7 @@ const app = express();
 // eslint-disable-next-line new-cap
 const router = express.Router();
 
-router.post('/users', ev(validations.post), (req, res) => {
+router.post('/users', (req, res) => {
 	bcrypt.hash(req.body.password, 1)
 	.then((hashed) => {
 		const newUser = {

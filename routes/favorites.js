@@ -6,6 +6,8 @@ const bcrypt = require('bcrypt-as-promised');
 const cookieParser = require('cookie-parser');
 const jwt = require('jsonwebtoken');
 const humps = require('humps');
+const ev = require('express-validation');
+const validations = require('../validations/users');
 // eslint-disable-next-line new-cap
 const router = express.Router();
 
@@ -59,24 +61,24 @@ router.post("/favorites", (req, res) => {
         .select('id', 'created_at', 'updated_at')
         .where('id', req.body.bookId)
         .then(result => {
-          knex('favorites')
+          return knex('favorites')
             .insert({
               book_id: req.body.bookId,
               user_id: payload.userId,
               created_at: result.created_at,
               updated_at: result.updated_at
             })
-            .then(inserted => {
-              knex('favorites')
+        })
+        .then(inserted => {
+            return knex('favorites')
                 .where('book_id', req.body.bookId)
-                .then(favoriteBook => {
-                  const favBook = favoriteBook[0];
-                  delete favBook.created_at;
-                  delete favBook.updated_at;
-                  res.set('Content-Type', 'application/json');
-                  res.status(200).json(humps.camelizeKeys(favBook));
-                })
-            })
+        })
+        .then(favoriteBook => {
+            const favBook = favoriteBook[0];
+            delete favBook.created_at;
+            delete favBook.updated_at;
+            res.set('Content-Type', 'application/json');
+            res.status(200).json(humps.camelizeKeys(favBook));
         })
     }
   })
@@ -91,17 +93,17 @@ router.delete("/favorites", (req, res) => {
       knex('favorites')
         .where('id', req.body.bookId)
         .then(result => {
-          const deleted = result[0];
-          knex('favorites')
-            .where('id', req.body.bookId)
-            .delete()
-            .then(delResult => {
-              delete deleted.created_at;
-              delete deleted.updated_at;
-              delete deleted.id
-              res.set('Content-Type', 'application/json');
-              res.status(200).json(humps.camelizeKeys(deleted));
-            })
+          return result[0];
+        }).then(deleted => {
+          delete deleted.created_at;
+          delete deleted.updated_at;
+          delete deleted.id;
+          res.set('Content-Type', 'application/json');
+          res.status(200).json(humps.camelizeKeys(deleted));
+        }).then(delResult => {
+          return knex('favorites')
+          .where('id', req.body.bookId)
+          .delete()
         })
     }
   })

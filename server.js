@@ -12,8 +12,8 @@ app.disable('x-powered-by');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser')
 const morgan = require('morgan');
-const ev = require('express-validation');
-const validations = require('../validations/users');
+// const ev = require('express-validation');
+// const validations = require('../validations/users');
 
 switch (app.get('env')) {
   case 'development':
@@ -59,9 +59,7 @@ app.use((_req, res) => {
 
 // eslint-disable-next-line max-params
 app.use((err, _req, res, _next) => {
-	if (err instanceof ev.ValidationError) {
-		return res.status(err.status).json(err);
-	} else if (err.output && err.output.statusCode) {
+if (err.output && err.output.statusCode) {
     return res
       .status(err.output.statusCode)
       .set('Content-Type', 'text/plain')
