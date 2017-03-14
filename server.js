@@ -12,8 +12,6 @@ app.disable('x-powered-by');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser')
 const morgan = require('morgan');
-const ev = require('express-validation');
-const validations = require('../validations/users');
 
 switch (app.get('env')) {
   case 'development':
@@ -53,25 +51,16 @@ app.use(favorites);
 app.use(token);
 app.use(users);
 
-app.use((_req, res) => {
-  res.sendStatus(404);
-});
-
-// eslint-disable-next-line max-params
 app.use((err, _req, res, _next) => {
-	if (err instanceof ev.ValidationError) {
-		return res.status(err.status).json(err);
-	} else if (err.output && err.output.statusCode) {
-    return res
-      .status(err.output.statusCode)
-      .set('Content-Type', 'text/plain')
-      .send(err.message);
+  if (err.status) {
+    res.set('Content-Type', 'text/plain')
+    return res.status(err.status).send(err);
   }
 
-  // eslint-disable-next-line no-console
-  console.error(err.stack);
+  console.error(err);
   res.sendStatus(500);
 });
+  // eslint-disable-next-line no-console
 
 const port = process.env.PORT || 8000;
 

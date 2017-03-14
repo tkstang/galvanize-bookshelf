@@ -6,6 +6,8 @@ const bcrypt = require('bcrypt-as-promised');
 const cookieParser = require('cookie-parser');
 const jwt = require('jsonwebtoken');
 const humps = require('humps');
+const ev = require('express-validation');
+const validations = require('../validations/token.js');
 
 // eslint-disable-next-line new-cap
 const router = express.Router();
@@ -24,7 +26,7 @@ router.get("/token", (req, res) => {
 	})
 })
 
-router.post("/token", validate(validation.login), (req, res) => {
+router.post("/token", ev(validations.post), (req, res) => {
 	if (!(req.body.email)){
 		res.set('Content-Type', 'text/plain');
 		console.log(1);

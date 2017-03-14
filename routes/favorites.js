@@ -6,6 +6,8 @@ const bcrypt = require('bcrypt-as-promised');
 const cookieParser = require('cookie-parser');
 const jwt = require('jsonwebtoken');
 const humps = require('humps');
+const ev = require('express-validation');
+const validations = require('../validations/favorites.js');
 // eslint-disable-next-line new-cap
 const router = express.Router();
 
@@ -49,7 +51,7 @@ router.get("/favorites/check", (req, res) => {
   })
 });
 
-router.post("/favorites", validate(validation.login), (req, res) => {
+router.post("/favorites", ev(validations.post), (req, res) => {
   jwt.verify(req.cookies.token, process.env.JWT_KEY, (err, payload) => {
     if (err) {
       res.set('Content-Type', 'text/plain');

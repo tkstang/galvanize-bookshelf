@@ -4,6 +4,8 @@ const express = require('express');
 const knex = require('../knex.js');
 const app = express();
 const humps = require('humps');
+const ev = require('express-validation');
+const validations = require('../validations/books.js');
 
 // eslint-disable-next-line new-cap
 const router = express.Router();
@@ -32,7 +34,7 @@ router.get("/books/:id", (req, res) => {
   });
 })
 
-router.post('/books', validate(validation.login), (req, res) => {
+router.post('/books', ev(validations.post), (req, res) => {
   const newBook = {
     title: req.body.title,
     author: req.body.author,

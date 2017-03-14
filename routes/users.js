@@ -5,8 +5,9 @@ const knex = require('../knex.js');
 const bcrypt = require('bcrypt-as-promised');
 const humps = require('humps');
 const ev = require('express-validation');
-const validations = require('../validations/users');
+const validations = require('../validations/users.js');
 const app = express();
+
 // eslint-disable-next-line new-cap
 const router = express.Router();
 
